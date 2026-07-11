@@ -8,11 +8,14 @@ import java.util.List;
  * <p>Used in two places:
  * <ul>
  *   <li>Exercise detail view — mini 8-session progression chart of the key metric
- *       (max weight for STRENGTH/BODYWEIGHT, pace/distance for CARDIO).</li>
+ *       (max weight for STRENGTH/BODYWEIGHT, pace for CARDIO).</li>
  *   <li>Exercise progression report — full sparkline across the selected date range.</li>
  * </ul>
  *
- * <p>All values are normalised to the [min, max] range of the supplied series so the
+ * <p>Weight and reps are passed as integers. Pace (durationMinutes / distanceKm)
+ * must be cast to double by the caller before passing in.
+ *
+ * <p>All values are normalized to the [min, max] range of the supplied series so the
  * chart always fills the full 8-level resolution regardless of absolute magnitude.
  * Identical values across the whole series render as mid-level blocks (▄) rather than
  * the lowest block, which would imply zero activity.
@@ -29,35 +32,65 @@ public class SparklineUtil {
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Renders a sparkline from a list of {@code double} values.
+     * Renders a sparkline from a list of {@code int} values.
      *
      * @param values ordered data points (oldest → newest); must not be null or empty
      * @return sparkline string, e.g. {@code "▁▂▃▄▅▆▇█"}
      * @throws IllegalArgumentException if values is null or empty
      */
-    public static String render(List<Double> values) {
+    public static String render(List<Integer> values) {
         if (values == null || values.isEmpty()) {
             throw new IllegalArgumentException("Values list must not be null or empty.");
         }
 
-        double min = values.stream().mapToDouble(Double::doubleValue).min().orElse(0);
-        double max = values.stream().mapToDouble(Double::doubleValue).max().orElse(0);
+        int min = values.stream().mapToInt(Integer::intValue).min().orElse(0);
+        int max = values.stream().mapToInt(Integer::intValue).max().orElse(0);
 
         StringBuilder sb = new StringBuilder(values.size());
-        for (double v : values) {
+        for (int v : values) {
             sb.append(toBlock(v, min, max));
         }
         return sb.toString();
     }
 
     /**
-     * Renders a sparkline from a primitive {@code double} array.
+     * Renders a sparkline from a primitive {@code int} array.
      *
      * @param values ordered data points (oldest → newest); must not be null or empty
      * @return sparkline string
      * @throws IllegalArgumentException if values is null or empty
      */
-    public static String render(double[] values) {
+    public static String render(int[] values) {
+        if (values == null || values.length == 0) {
+            throw new IllegalArgumentException("Values array must not be null or empty.");
+        }
+
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int v : values) {
+            if (v < min) min = v;
+            if (v > max) max = v;
+        }
+
+        StringBuilder sb = new StringBuilder(values.length);
+        for (int v : values) {
+            sb.append(toBlock(v, min, max));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Renders a sparkline from a {@code double} array.
+     * Use this overload for pace values (cast from int fields by the caller):
+     * <pre>
+     *     double pace = (double) entry.getDurationMinutes() / entry.getDistanceKm();
+     * </pre>
+     *
+     * @param values ordered pace values (oldest → newest); must not be null or empty
+     * @return sparkline string
+     * @throws IllegalArgumentException if values is null or empty
+     */
+    public static String renderDoubles(double[] values) {
         if (values == null || values.length == 0) {
             throw new IllegalArgumentException("Values array must not be null or empty.");
         }
@@ -71,7 +104,7 @@ public class SparklineUtil {
 
         StringBuilder sb = new StringBuilder(values.length);
         for (double v : values) {
-            sb.append(toBlock(v, min, max));
+            sb.append(toBlockDouble(v, min, max));
         }
         return sb.toString();
     }
@@ -81,37 +114,57 @@ public class SparklineUtil {
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Returns a one-line labelled sparkline, e.g.:
-     * <pre>Weight (kg)  ▁▂▃▄▅▆▇█  60.0 → 100.0</pre>
+     * Returns a one-line labeled sparkline for integer metrics, e.g.:
+     * <pre>Weight (kg)  ▁▂▃▄▅▆▇█  60 → 100 kg</pre>
      *
      * @param label  metric name shown on the left
-     * @param values ordered data points
-     * @param unit   unit string appended to the range (e.g. "kg", "km")
+     * @param values ordered integer data points
+     * @param unit   unit string appended to the range (e.g. "kg", "reps")
      * @return formatted one-liner
      */
-    public static String renderLabelled(String label, List<Double> values, String unit) {
+    public static String renderLabeled(String label, List<Integer> values, String unit) {
         String spark = render(values);
-        double min = values.stream().mapToDouble(Double::doubleValue).min().orElse(0);
-        double max = values.stream().mapToDouble(Double::doubleValue).max().orElse(0);
-        return String.format("%-16s %s  %.1f → %.1f %s", label, spark, min, max, unit);
+        int min = values.stream().mapToInt(Integer::intValue).min().orElse(0);
+        int max = values.stream().mapToInt(Integer::intValue).max().orElse(0);
+        return String.format("%-16s %s  %d → %d %s", label, spark, min, max, unit);
     }
 
     /**
-     * Renders a sparkline with a min/max legend on a second line:
+     * Returns a one-line labeled sparkline for pace (double) values, e.g.:
+     * <pre>Pace (min/km)  ▁▂▃▄▅▆▇█  4.5 → 6.2 min/km</pre>
+     *
+     * @param label  metric name shown on the left
+     * @param values ordered pace values
+     * @param unit   unit string (e.g. "min/km")
+     * @return formatted one-liner
+     */
+    public static String renderLabeledDoubles(String label, double[] values, String unit) {
+        String spark = renderDoubles(values);
+        double min = Double.MAX_VALUE;
+        double max = -Double.MAX_VALUE;
+        for (double v : values) {
+            if (v < min) min = v;
+            if (v > max) max = v;
+        }
+        return String.format("%-16s %s  %.2f → %.2f %s", label, spark, min, max, unit);
+    }
+
+    /**
+     * Renders a sparkline with a min/max legend on a second line (integer metrics):
      * <pre>
      * ▁▂▃▄▅▆▇█
-     * min: 60.0  max: 100.0
+     * min: 60  max: 100
      * </pre>
      *
-     * @param values ordered data points
+     * @param values ordered integer data points
      * @return two-line string
      */
-    public static String renderWithLegend(List<Double> values) {
+    public static String renderWithLegend(List<Integer> values) {
         String spark = render(values);
-        double min = values.stream().mapToDouble(Double::doubleValue).min().orElse(0);
-        double max = values.stream().mapToDouble(Double::doubleValue).max().orElse(0);
+        int min = values.stream().mapToInt(Integer::intValue).min().orElse(0);
+        int max = values.stream().mapToInt(Integer::intValue).max().orElse(0);
         return spark + System.lineSeparator()
-                + String.format("min: %.1f  max: %.1f", min, max);
+                + String.format("min: %d  max: %d", min, max);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -122,11 +175,11 @@ public class SparklineUtil {
      * Returns a sparkline for at most the last {@code n} entries in the list.
      * Useful for the exercise detail view which shows the last 8 sessions.
      *
-     * @param values full ordered history (oldest → newest)
+     * @param values full ordered integer history (oldest → newest)
      * @param n      maximum number of trailing entries to include
      * @return sparkline string
      */
-    public static String renderLastN(List<Double> values, int n) {
+    public static String renderLastN(List<Integer> values, int n) {
         if (values == null || values.isEmpty()) {
             throw new IllegalArgumentException("Values list must not be null or empty.");
         }
@@ -134,24 +187,52 @@ public class SparklineUtil {
         return render(values.subList(from, values.size()));
     }
 
+    /**
+     * Returns a sparkline for at most the last {@code n} pace values.
+     *
+     * @param values full ordered pace history (oldest → newest)
+     * @param n      maximum number of trailing entries to include
+     * @return sparkline string
+     */
+    public static String renderLastNDoubles(double[] values, int n) {
+        if (values == null || values.length == 0) {
+            throw new IllegalArgumentException("Values array must not be null or empty.");
+        }
+        int from = Math.max(0, values.length - n);
+        double[] window = new double[values.length - from];
+        System.arraycopy(values, from, window, 0, window.length);
+        return renderDoubles(window);
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // Internal helpers
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Maps a single value onto one of the 8 block characters.
-     *
-     * <p>When min == max (flat series) every point maps to the mid-level block (▄)
-     * rather than ▁, which would imply the metric is near zero.
+     * Maps a single integer value onto one of the 8 block characters.
+     * When min == max (flat series) every point maps to the mid-level block (▄).
      */
-    private static char toBlock(double value, double min, double max) {
+    private static char toBlock(int value, int min, int max) {
         if (max == min) {
-            return BLOCKS[LEVELS / 2]; // flat series → mid block ▄
+            return BLOCKS[LEVELS / 2]; // flat series → mid-block ▄
+        }
+        double normalised = (double)(value - min) / (max - min); // 0.0 – 1.0
+        int index = (int) Math.floor(normalised * (LEVELS - 1));
+        index = Math.clamp(index, 0, LEVELS - 1);
+        return BLOCKS[index];
+    }
+
+    /**
+     * Maps a single double value onto one of the 8 block characters.
+     * Used for pace values. When min == max maps to mid-level block (▄).
+     */
+    private static char toBlockDouble(double value, double min, double max) {
+        if (max == min) {
+            return BLOCKS[LEVELS / 2]; // flat series → mid-block ▄
         }
         double normalised = (value - min) / (max - min); // 0.0 – 1.0
         int index = (int) Math.floor(normalised * (LEVELS - 1));
-        // clamp to valid range (guard against floating-point edge cases)
-        index = Math.max(0, Math.min(LEVELS - 1, index));
+        index = Math.clamp(index, 0, LEVELS - 1);
         return BLOCKS[index];
     }
 }

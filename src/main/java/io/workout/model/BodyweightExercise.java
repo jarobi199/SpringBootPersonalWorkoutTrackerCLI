@@ -1,6 +1,5 @@
 package io.workout.model;
 
-
 import io.workout.enums.Equipment;
 import io.workout.enums.ExerciseType;
 import io.workout.enums.MuscleGroup;

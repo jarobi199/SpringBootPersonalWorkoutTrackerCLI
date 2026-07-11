@@ -13,6 +13,7 @@ import io.workout.model.SessionEntry;
 import io.workout.model.WorkoutSession;
 import io.workout.repository.ExerciseRepository;
 import io.workout.repository.WorkoutSessionRepository;
+import io.workout.util.SparklineUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -81,14 +82,30 @@ public class ExerciseService {
 
         List<WorkoutSession> workoutSessions = workoutSessionRepository.findTop10ByUserId(SessionContext.getUser().getId());
         List<SessionEntry> sessionEntries = new ArrayList<>();
-        workoutSessions.forEach(workoutSession -> {
-            sessionEntries.addAll(workoutSession.getSessionEntries().stream().filter(sessionEntry -> sessionEntry.exerciseId().equals(exercise.getId())).toList());
-        });
+        workoutSessions.forEach(workoutSession -> sessionEntries.addAll(workoutSession.getSessionEntries().stream().filter(sessionEntry -> sessionEntry.exerciseId().equals(exercise.getId())).toList()));
 
-        if(!sessionEntries.isEmpty()) {
+        if (!sessionEntries.isEmpty()) {
+            List<Integer> weightsKg = new ArrayList<>();
             System.out.println();
             System.out.println("| SESSION ENTRIES |");
 
+            if (ExerciseType.STRENGTH.equals(exercise.getExerciseType())) {
+                Table sessionEntryTable = Clique.table(TableType.BOX_DRAW)
+                        .headers(
+                                "[*blue, bold]EXERCISE NAME[/]",
+                                "[*blue, bold]EXERCISE TYPE[/]",
+                                "[*blue, bold]WEIGHT (KG)[/]",
+                                "[*blue, bold]DURATION[/]",
+                                "[*blue, bold]NOTES[/]"
+                        );
+                for(SessionEntry sessionEntry : sessionEntries) {
+                    sessionEntryTable.row(sessionEntry.exerciseName(), sessionEntry.exerciseType().name(), String.valueOf(sessionEntry.weightKg()), String.valueOf(sessionEntry.duration()), sessionEntry.notes());
+                    weightsKg.add(sessionEntry.weightKg());
+                }
+                exerciseTable.render();
+
+                SparklineUtil.renderLabeled("Weight", weightsKg, "Kg");
+            }
         }
 
     }
