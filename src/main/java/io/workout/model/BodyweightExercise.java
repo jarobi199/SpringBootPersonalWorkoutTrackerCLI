@@ -11,8 +11,8 @@ public class BodyweightExercise extends Exercise {
         //No argument exercise
     }
 
-    public BodyweightExercise(String name, MuscleGroup muscleGroup, Equipment equipment, String notes) {
-        super(name, muscleGroup, equipment, notes);
+    public BodyweightExercise(String userId, String name, MuscleGroup muscleGroup, Equipment equipment, String notes) {
+        super(userId, name, muscleGroup, equipment, notes);
     }
 
     @Override

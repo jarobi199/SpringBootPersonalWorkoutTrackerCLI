@@ -10,8 +10,8 @@ public class CardioExercise extends Exercise {
         //No argument constructor
     }
 
-    public CardioExercise(String name, MuscleGroup muscleGroup, Equipment equipment, String notes) {
-        super(name, muscleGroup, equipment, notes);
+    public CardioExercise(String userId, String name, MuscleGroup muscleGroup, Equipment equipment, String notes) {
+        super(userId, name, muscleGroup, equipment, notes);
     }
 
     @Override

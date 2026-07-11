@@ -10,18 +10,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public abstract class Exercise {
     @Id
     protected String id;
+    protected String userId;
     protected String name;
     protected MuscleGroup muscleGroup;
     protected Equipment equipment;
-    protected ExerciseType exerciseType;
     protected String notes;
 
     public Exercise() {
         //No argument constructor
     }
 
-    public Exercise(String name, MuscleGroup muscleGroup, Equipment equipment, String notes) {
+    public Exercise(String userId, String name, MuscleGroup muscleGroup, Equipment equipment, String notes) {
         this.name = name;
+        this.userId = userId;
         this.muscleGroup = muscleGroup;
         this.equipment = equipment;
         this.notes = notes;
@@ -33,6 +34,14 @@ public abstract class Exercise {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getName() {
@@ -67,8 +76,14 @@ public abstract class Exercise {
         this.notes = notes;
     }
 
+    public String getExerciseDisplay() {
+        return name + " (" + getExerciseType().name() + " - " + muscleGroup + " - " + equipment + ")";
+    }
+
     public abstract int calculateVolume(SessionEntry sessionEntry);
 
     public abstract ExerciseType getExerciseType();
-
 }
+
+
+

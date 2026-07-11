@@ -1,6 +1,5 @@
 package io.workout.repository;
 
-/*
 import io.workout.enums.Equipment;
 import io.workout.enums.MuscleGroup;
 import io.workout.model.Exercise;
@@ -15,4 +14,3 @@ public interface ExerciseRepository extends MongoRepository<Exercise, String> {
     List<Exercise> findByUserIdAndMuscleGroup(String userId, MuscleGroup muscleGroup);
     List<Exercise> findByUserIdAndEquipment(String userId, Equipment equipment);
 }
-*/

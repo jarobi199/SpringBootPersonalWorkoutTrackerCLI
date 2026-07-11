@@ -11,6 +11,8 @@ public class MainMenu implements IMenu {
     @Autowired
     private AuthenticateMenu authenticateMenu;
     @Autowired
+    private ExerciseMenu exerciseMenu;
+    @Autowired
     private SettingsMenu settingsMenu;
     @Autowired
     private GoodbyeMenu goodbyeMenu;
@@ -21,13 +23,14 @@ public class MainMenu implements IMenu {
 
         System.out.println();
         displayTitle();
-        authenticateMenu.show();
+        authenticateMenu.automaticLogin();
         System.out.println();
 
         do {
             printOptions();
             choice = InputHandler.getIntegerInput();
             menu = switch (choice) {
+                case 1 -> exerciseMenu;
                 case 5 -> settingsMenu;
                 case 0 -> goodbyeMenu;
                default -> throw new IllegalStateException("Unexpected value: " + choice);
