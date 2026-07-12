@@ -4,7 +4,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "sessions")
@@ -12,17 +11,21 @@ public class WorkoutSession {
     @Id
     private String id;
     private String userId;
-    private LocalDateTime sessionDate;
+    private LocalDateTime sessionDateTime;
     private int duration;
     private String notes;
     private List<SessionEntry> sessionEntries;
 
-    public WorkoutSession(String userId, LocalDateTime sessionDate, int duration, String notes) {
+    public WorkoutSession() {
+        //No argument constructor
+    }
+
+    public WorkoutSession(String userId, LocalDateTime sessionDateTime, int duration, String notes, List<SessionEntry> sessionEntries) {
         this.userId = userId;
-        this.sessionDate = sessionDate;
+        this.sessionDateTime = sessionDateTime;
         this.duration = duration;
         this.notes = notes;
-        this.sessionEntries = new ArrayList<>();
+        this.sessionEntries = sessionEntries;
     }
 
     public String getId() {
@@ -41,12 +44,12 @@ public class WorkoutSession {
         this.userId = userId;
     }
 
-    public LocalDateTime getSessionDate() {
-        return sessionDate;
+    public LocalDateTime getSessionDateTime() {
+        return sessionDateTime;
     }
 
-    public void setSessionDate(LocalDateTime sessionDate) {
-        this.sessionDate = sessionDate;
+    public void setSessionDateTime(LocalDateTime sessionDateTime) {
+        this.sessionDateTime = sessionDateTime;
     }
 
     public int getDuration() {

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface WorkoutSessionRepository extends MongoRepository<WorkoutSession, String> {
-    List<WorkoutSession> findByUserIdOrderBySessionDateDesc(String userId);
+    List<WorkoutSession> findByUserIdOrderBySessionDateTimeDesc(String userId);
     List<WorkoutSession> findTop10ByUserId(String userId);
 }
 
