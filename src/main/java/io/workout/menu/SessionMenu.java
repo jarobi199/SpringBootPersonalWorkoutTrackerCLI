@@ -29,10 +29,16 @@ public class SessionMenu implements IMenu {
             switch (choice) {
                 case 1 -> startNewSession();
                 case 2 -> viewSessions();
+                case 3 -> viewSessionDetails();
                 case 4 -> deleteSession();
             }
         }
         while (choice != 0);
+    }
+
+    public void viewSessionDetails() {
+        WorkoutSession workoutSession = listWorkoutSessionsAndSelect();
+        workoutSessionService.viewSessionDetails(workoutSession);
     }
 
     public void deleteSession() {

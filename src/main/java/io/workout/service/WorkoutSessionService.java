@@ -71,4 +71,33 @@ public class WorkoutSessionService {
         workoutSessionRepository.delete(workoutSession);
     }
 
+    public void viewSessionDetails(WorkoutSession workoutSession) {
+        System.out.println("| WORKOUT SESSION |");
+        Clique.table(TableType.BOX_DRAW)
+                .headers(
+                        "[*blue, bold]DATE[/]",
+                        "[*blue, bold]DURATION[/]",
+                        "[*blue, bold]NOTES[/]",
+                        "[*blue, bold]NUMBER OF EXERCISES[/]"
+                )
+                .row(workoutSession.getSessionDateTime().toString(), String.valueOf(workoutSession.getDuration()),workoutSession.getNotes(), String.valueOf(workoutSession.getSessionEntries().size()))
+                .render();
+
+        System.out.println();
+        List<SessionEntry> sessionEntries = workoutSession.getSessionEntries();
+        if(!sessionEntries.isEmpty()) {
+            System.out.println("| SESSION ENTRIES |");
+            Table sessionEntryTable = Clique.table(TableType.BOX_DRAW)
+                    .headers(
+                            "[*blue, bold]EXERCISE NAME[/]",
+                            "[*blue, bold]EXERCISE TYPE[/]",
+                            "[*blue, bold]NOTES[/]"
+                    );
+            for(SessionEntry sessionEntry : sessionEntries) {
+                sessionEntryTable.row(sessionEntry.exerciseName(), sessionEntry.exerciseType().name(), sessionEntry.notes());
+            }
+            sessionEntryTable.render();
+        }
+    }
+
 }
