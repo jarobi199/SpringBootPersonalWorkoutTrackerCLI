@@ -63,8 +63,16 @@ public class ExerciseService {
        return exerciseRepository.findByUserId(SessionContext.getUser().getId());
     }
 
-    public void deleteExercise(Exercise exercise) {
-        exerciseRepository.delete(exercise);
+    public boolean deleteExercise(Exercise exercise) {
+        boolean success = false;
+        List<WorkoutSession> workoutSessions = workoutSessionRepository.findByUserIdOrderBySessionDateTimeDesc(SessionContext.getUser().getId())
+                .stream().filter(workoutSession -> workoutSession.getSessionEntries().stream().anyMatch(sessionEntry -> sessionEntry.exerciseId().equals(exercise.getId()))).toList();
+        if(workoutSessions.isEmpty()) {
+            exerciseRepository.delete(exercise);
+            success = true;
+        }
+
+        return success;
     }
 
     public void viewDetails(Exercise exercise) {

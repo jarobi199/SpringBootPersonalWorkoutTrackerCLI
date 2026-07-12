@@ -75,5 +75,9 @@ public class WorkoutSession {
     public void setSessionEntries(List<SessionEntry> sessionEntries) {
         this.sessionEntries = sessionEntries;
     }
+
+    public String getDisplayName() {
+        return sessionDateTime.toString() + " - Notes: " + notes;
+    }
 }
 

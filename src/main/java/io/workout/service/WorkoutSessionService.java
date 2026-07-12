@@ -51,6 +51,10 @@ public class WorkoutSessionService {
         workoutSessionTable.render();
     }
 
+    public List<WorkoutSession> getAllSessions() {
+        return  workoutSessionRepository.findByUserIdOrderBySessionDateTimeDesc(SessionContext.getUser().getId());
+    }
+
     private String getTotalWorkoutSessionVolumeAsString(WorkoutSession workoutSession) {
         int totalVolume = 0;
         for(SessionEntry sessionEntry : workoutSession.getSessionEntries()) {
@@ -62,4 +66,9 @@ public class WorkoutSessionService {
         }
         return String.valueOf(totalVolume);
     }
+
+    public void deleteSession(WorkoutSession workoutSession) {
+        workoutSessionRepository.delete(workoutSession);
+    }
+
 }

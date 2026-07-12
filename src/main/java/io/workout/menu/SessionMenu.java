@@ -3,6 +3,7 @@ package io.workout.menu;
 import io.workout.interfaces.IMenu;
 import io.workout.model.Exercise;
 import io.workout.model.SessionEntry;
+import io.workout.model.WorkoutSession;
 import io.workout.service.WorkoutSessionService;
 import io.workout.util.InputHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,20 @@ public class SessionMenu implements IMenu {
             switch (choice) {
                 case 1 -> startNewSession();
                 case 2 -> viewSessions();
+                case 4 -> deleteSession();
             }
         }
         while (choice != 0);
+    }
+
+    public void deleteSession() {
+        WorkoutSession workoutSession = listWorkoutSessionsAndSelect();
+        System.out.println("Are you sure that you want to delete this session? (Y/N):");
+        String confirmation = InputHandler.getStringInput();
+        if (confirmation.equalsIgnoreCase("Y")) {
+            workoutSessionService.deleteSession(workoutSession);
+            System.out.println("The workout session has been deleted!");
+        }
     }
 
     public void viewSessions() {
@@ -111,5 +123,27 @@ public class SessionMenu implements IMenu {
         return sessionEntries;
     }
 
+    public WorkoutSession listWorkoutSessionsAndSelect() {
+        int number = 1;
+        WorkoutSession workoutSession = null;
+        int choice = 0;
+
+        List<WorkoutSession> workoutSessions = workoutSessionService.getAllSessions();
+        if (!workoutSessions.isEmpty()) {
+            for (WorkoutSession w : workoutSessions) {
+                System.out.println("[" + number + "] " +  w.getDisplayName());
+                number++;
+            }
+            System.out.println("Select a workout session:");
+            choice = InputHandler.getIntegerInput();
+            workoutSession = workoutSessions.get(choice - 1);
+        }
+        else
+        {
+            System.out.println("There are no exercises available.");
+        }
+
+        return workoutSession;
+    }
 }
 

@@ -44,10 +44,15 @@ public class ExerciseMenu implements IMenu {
     public void deleteExercise() {
         Exercise exercise = listExercisesAndSelect();
         if (exercise != null) {
-            exerciseService.deleteExercise(exercise);
-            System.out.println("Exercise - " + exercise.getName() + " has been deleted");
+            boolean success = exerciseService.deleteExercise(exercise);
+            if (success) {
+                System.out.println("Exercise - " + exercise.getName() + " has been deleted");
+            }
+            else
+            {
+                System.out.println("Exercise - " + exercise.getName() + " could not be deleted! It references other workout sessions.");
+            }
         }
-
     }
 
     public void addExercise() {
