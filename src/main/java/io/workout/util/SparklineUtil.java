@@ -90,8 +90,8 @@ public class SparklineUtil {
      * @return sparkline string
      * @throws IllegalArgumentException if values is null or empty
      */
-    public static String renderDoubles(double[] values) {
-        if (values == null || values.length == 0) {
+    public static String renderDoubles(List<Double> values) {
+        if (values == null || values.isEmpty()) {
             throw new IllegalArgumentException("Values array must not be null or empty.");
         }
 
@@ -102,7 +102,7 @@ public class SparklineUtil {
             if (v > max) max = v;
         }
 
-        StringBuilder sb = new StringBuilder(values.length);
+        StringBuilder sb = new StringBuilder(values.size());
         for (double v : values) {
             sb.append(toBlockDouble(v, min, max));
         }
@@ -138,7 +138,7 @@ public class SparklineUtil {
      * @param unit   unit string (e.g. "min/km")
      * @return formatted one-liner
      */
-    public static String renderLabeledDoubles(String label, double[] values, String unit) {
+    public static String renderLabeledDoubles(String label, List<Double> values, String unit) {
         String spark = renderDoubles(values);
         double min = Double.MAX_VALUE;
         double max = -Double.MAX_VALUE;
@@ -187,22 +187,6 @@ public class SparklineUtil {
         return render(values.subList(from, values.size()));
     }
 
-    /**
-     * Returns a sparkline for at most the last {@code n} pace values.
-     *
-     * @param values full ordered pace history (oldest → newest)
-     * @param n      maximum number of trailing entries to include
-     * @return sparkline string
-     */
-    public static String renderLastNDoubles(double[] values, int n) {
-        if (values == null || values.length == 0) {
-            throw new IllegalArgumentException("Values array must not be null or empty.");
-        }
-        int from = Math.max(0, values.length - n);
-        double[] window = new double[values.length - from];
-        System.arraycopy(values, from, window, 0, window.length);
-        return renderDoubles(window);
-    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // Internal helpers

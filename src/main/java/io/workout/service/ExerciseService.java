@@ -87,6 +87,7 @@ public class ExerciseService {
         if (!sessionEntries.isEmpty()) {
             List<Integer> weightsKg = new ArrayList<>();
             List<Integer> reps = new ArrayList<>();
+            List<Double> paces = new ArrayList<>();
             System.out.println();
             System.out.println("| SESSION ENTRIES |");
 
@@ -103,7 +104,7 @@ public class ExerciseService {
                     sessionEntryTable.row(sessionEntry.exerciseName(), sessionEntry.exerciseType().name(), String.valueOf(sessionEntry.weightKg()), String.valueOf(sessionEntry.duration()), sessionEntry.notes());
                     weightsKg.add(sessionEntry.weightKg());
                 }
-                exerciseTable.render();
+                sessionEntryTable.render();
 
                 SparklineUtil.renderLabeled("Weight", weightsKg, "Kg");
             }
@@ -120,7 +121,7 @@ public class ExerciseService {
                     sessionEntryTable.row(sessionEntry.exerciseName(), sessionEntry.exerciseType().name(), String.valueOf(sessionEntry.reps()), String.valueOf(sessionEntry.duration()), sessionEntry.notes());
                     reps.add(sessionEntry.reps());
                 }
-                exerciseTable.render();
+                sessionEntryTable.render();
 
                 SparklineUtil.renderLabeled("Reps", reps, "");
             }
@@ -129,17 +130,18 @@ public class ExerciseService {
                         .headers(
                                 "[*blue, bold]EXERCISE NAME[/]",
                                 "[*blue, bold]EXERCISE TYPE[/]",
-                                "[*blue, bold]WEIGHT (KG)[/]",
+                                "[*blue, bold]PACE[/]",
                                 "[*blue, bold]DURATION[/]",
                                 "[*blue, bold]NOTES[/]"
                         );
                 for(SessionEntry sessionEntry : sessionEntries) {
-                    sessionEntryTable.row(sessionEntry.exerciseName(), sessionEntry.exerciseType().name(), String.valueOf(sessionEntry.weightKg()), String.valueOf(sessionEntry.duration()), sessionEntry.notes());
-                    reps.add(sessionEntry.reps());
+                    double pace = (double) sessionEntry.duration() / sessionEntry.distanceKm();
+                    sessionEntryTable.row(sessionEntry.exerciseName(), sessionEntry.exerciseType().name(), String.valueOf(pace), String.valueOf(sessionEntry.duration()), sessionEntry.notes());
+                    paces.add(pace);
                 }
-                exerciseTable.render();
+                sessionEntryTable.render();
 
-                SparklineUtil.renderLabeled("Reps", reps, "");
+                SparklineUtil.renderLabeledDoubles("Paces", paces, "");
             }
         }
 
