@@ -86,6 +86,7 @@ public class ExerciseService {
 
         if (!sessionEntries.isEmpty()) {
             List<Integer> weightsKg = new ArrayList<>();
+            List<Integer> reps = new ArrayList<>();
             System.out.println();
             System.out.println("| SESSION ENTRIES |");
 
@@ -105,6 +106,40 @@ public class ExerciseService {
                 exerciseTable.render();
 
                 SparklineUtil.renderLabeled("Weight", weightsKg, "Kg");
+            }
+            else if (ExerciseType.BODYWEIGHT.equals(exercise.getExerciseType())) {
+                Table sessionEntryTable = Clique.table(TableType.BOX_DRAW)
+                        .headers(
+                                "[*blue, bold]EXERCISE NAME[/]",
+                                "[*blue, bold]EXERCISE TYPE[/]",
+                                "[*blue, bold]REPS[/]",
+                                "[*blue, bold]DURATION[/]",
+                                "[*blue, bold]NOTES[/]"
+                        );
+                for(SessionEntry sessionEntry : sessionEntries) {
+                    sessionEntryTable.row(sessionEntry.exerciseName(), sessionEntry.exerciseType().name(), String.valueOf(sessionEntry.reps()), String.valueOf(sessionEntry.duration()), sessionEntry.notes());
+                    reps.add(sessionEntry.reps());
+                }
+                exerciseTable.render();
+
+                SparklineUtil.renderLabeled("Reps", reps, "");
+            }
+            else if (ExerciseType.CARDIO.equals(exercise.getExerciseType())) {
+                Table sessionEntryTable = Clique.table(TableType.BOX_DRAW)
+                        .headers(
+                                "[*blue, bold]EXERCISE NAME[/]",
+                                "[*blue, bold]EXERCISE TYPE[/]",
+                                "[*blue, bold]WEIGHT (KG)[/]",
+                                "[*blue, bold]DURATION[/]",
+                                "[*blue, bold]NOTES[/]"
+                        );
+                for(SessionEntry sessionEntry : sessionEntries) {
+                    sessionEntryTable.row(sessionEntry.exerciseName(), sessionEntry.exerciseType().name(), String.valueOf(sessionEntry.weightKg()), String.valueOf(sessionEntry.duration()), sessionEntry.notes());
+                    reps.add(sessionEntry.reps());
+                }
+                exerciseTable.render();
+
+                SparklineUtil.renderLabeled("Reps", reps, "");
             }
         }
 
