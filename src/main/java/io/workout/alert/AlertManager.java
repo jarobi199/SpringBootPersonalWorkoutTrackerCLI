@@ -4,7 +4,6 @@ import io.workout.interfaces.AlertStrategy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class AlertManager {
@@ -14,10 +13,9 @@ public class AlertManager {
         this.strategies = strategies;
     }
 
-     public String evaluate(AlertContext context) {
-        return strategies.stream()
+    public void evaluate(AlertContext context) {
+        strategies.stream()
                 .filter(s -> s.supports(context))
-                .map(s -> s.evaluate(context)) .collect(Collectors.joining("\n"));
+                .forEach(s -> s.evaluate(context));
     }
-
 }

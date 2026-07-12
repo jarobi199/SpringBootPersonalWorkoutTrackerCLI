@@ -80,7 +80,7 @@ public class ExerciseService {
         .row(exercise.getName(), exercise.getExerciseType().name(), exercise.getMuscleGroup().name(), exercise.getEquipment().name(),  exercise.getNotes());
         exerciseTable.render();
 
-        List<WorkoutSession> workoutSessions = workoutSessionRepository.findTop10ByUserId(SessionContext.getUser().getId());
+        List<WorkoutSession> workoutSessions = workoutSessionRepository.findByUserIdOrderBySessionDateTimeDesc(SessionContext.getUser().getId());
         List<SessionEntry> sessionEntries = new ArrayList<>();
         workoutSessions.forEach(workoutSession -> sessionEntries.addAll(workoutSession.getSessionEntries().stream().filter(sessionEntry -> sessionEntry.exerciseId().equals(exercise.getId())).toList()));
 
@@ -106,7 +106,9 @@ public class ExerciseService {
                 }
                 sessionEntryTable.render();
 
-                SparklineUtil.renderLabeled("Weight", weightsKg, "Kg");
+                System.out.println();
+                System.out.println("| PROGRESSION GRAPH |");
+                System.out.println(SparklineUtil.renderLabeled("Weight", weightsKg, "Kg"));
             }
             else if (ExerciseType.BODYWEIGHT.equals(exercise.getExerciseType())) {
                 Table sessionEntryTable = Clique.table(TableType.BOX_DRAW)
@@ -123,7 +125,9 @@ public class ExerciseService {
                 }
                 sessionEntryTable.render();
 
-                SparklineUtil.renderLabeled("Reps", reps, "");
+                System.out.println();
+                System.out.println("| PROGRESSION GRAPH |");
+                System.out.println(SparklineUtil.renderLabeled("Reps", reps, ""));
             }
             else if (ExerciseType.CARDIO.equals(exercise.getExerciseType())) {
                 Table sessionEntryTable = Clique.table(TableType.BOX_DRAW)
@@ -141,7 +145,9 @@ public class ExerciseService {
                 }
                 sessionEntryTable.render();
 
-                SparklineUtil.renderLabeledDoubles("Paces", paces, "");
+                System.out.println();
+                System.out.println("| PROGRESSION GRAPH |");
+                System.out.println(SparklineUtil.renderLabeledDoubles("Paces", paces, ""));
             }
         }
 

@@ -1,5 +1,6 @@
 package io.workout.model;
 
+import io.workout.authentication.SessionContext;
 import io.workout.enums.Equipment;
 import io.workout.enums.ExerciseType;
 import io.workout.enums.MuscleGroup;
@@ -16,7 +17,7 @@ public class BodyweightExercise extends Exercise {
 
     @Override
     public int calculateVolume(SessionEntry sessionEntry) {
-        return sessionEntry.reps() * sessionEntry.sets() * (sessionEntry.weightKg() + sessionEntry.addedWeightKg());
+        return sessionEntry.reps() * sessionEntry.sets() * (SessionContext.getUser().getBodyWeightKg() + sessionEntry.addedWeightKg());
     }
 
     @Override

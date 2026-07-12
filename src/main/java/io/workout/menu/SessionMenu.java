@@ -27,16 +27,21 @@ public class SessionMenu implements IMenu {
             choice = InputHandler.getIntegerInput();
             switch (choice) {
                 case 1 -> startNewSession();
+                case 2 -> viewSessions();
             }
         }
         while (choice != 0);
+    }
+
+    public void viewSessions() {
+        workoutSessionService.viewSessions();
     }
 
     @Override
     public void printOptions() {
         System.out.println();
         System.out.println("[1] Start new session");
-        System.out.println("[2] View recent sessions");
+        System.out.println("[2] View all sessions");
         System.out.println("[3] View session detail");
         System.out.println("[4] Delete session");
         System.out.println("[0] Back");
