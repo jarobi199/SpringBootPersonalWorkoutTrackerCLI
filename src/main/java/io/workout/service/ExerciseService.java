@@ -17,6 +17,7 @@ import io.workout.util.SparklineUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,7 +92,6 @@ public class ExerciseService {
         List<WorkoutSession> workoutSessions = workoutSessionRepository.findByUserIdOrderBySessionDateTimeDesc(SessionContext.getUser().getId());
         List<SessionEntry> sessionEntries = new ArrayList<>();
         workoutSessions.forEach(workoutSession -> sessionEntries.addAll(workoutSession.getSessionEntries().stream().filter(sessionEntry -> sessionEntry.exerciseId().equals(exercise.getId())).toList()));
-
         if (!sessionEntries.isEmpty()) {
             List<Integer> weightsKg = new ArrayList<>();
             List<Integer> reps = new ArrayList<>();
