@@ -12,6 +12,7 @@ import io.workout.repository.WorkoutSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,22 +27,13 @@ public class ReportService {
     public void topExercises() {
         Map<Exercise, List<SessionEntry>> exerciseListMap = new HashMap<>();
         List<Exercise> exercises = exerciseRepository.findByUserId(SessionContext.getUser().getId());
+        List<WorkoutSession> workoutSessions = workoutSessionRepository.findByUserIdOrderBySessionDateTimeDesc(SessionContext.getUser().getId());
+
         for (Exercise exercise : exercises) {
-            List<WorkoutSession> workoutSessions = workoutSessionRepository.findByUserIdOrderBySessionDateTimeDesc(SessionContext.getUser().getId());
-            for (WorkoutSession workoutSession : workoutSessions) {
-                List<SessionEntry> sessionEntries = workoutSession.getSessionEntries().stream()
-                        .filter(sessionEntry ->  sessionEntry.exerciseId().equals(exercise.getId())).collect(Collectors.toCollection(ArrayList::new));
+            List<SessionEntry> sessionEntries = getAllSessionEntriesByExercise(exercise, workoutSessions);
                 if(!sessionEntries.isEmpty()) {
-                    if(exerciseListMap.containsKey(exercise))
-                    {
-                        exerciseListMap.get(exercise).addAll(sessionEntries);
-                    }
-                    else
-                    {
-                        exerciseListMap.put(exercise, sessionEntries);
-                    }
+                    exerciseListMap.put(exercise, sessionEntries);
                 }
-            }
         }
 
         if(!exerciseListMap.isEmpty()){
@@ -75,4 +67,28 @@ public class ReportService {
             topExercisesTable.render();
         }
     }
+
+    public void exerciseProgression(Exercise exercise, LocalDateTime startDate, LocalDateTime endDate) {
+        List<WorkoutSession> workoutSessions = workoutSessionRepository.findBySessionDateTimeBetween(startDate, endDate);
+        List<SessionEntry> sessionEntries = getAllSessionEntriesByExercise(exercise, workoutSessions);
+
+        System.out.println(sessionEntries);
+    }
+
+    private List<SessionEntry> getAllSessionEntriesByExercise(Exercise exercise, List<WorkoutSession> workoutSessions) {
+        List<SessionEntry> sessionEntries = new ArrayList<>();
+        for (WorkoutSession workoutSession : workoutSessions) {
+            List<SessionEntry> entries = workoutSession.getSessionEntries()
+                    .stream()
+                    .filter(sessionEntry -> sessionEntry.exerciseId().equals(exercise.getId()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            if(!entries.isEmpty()) {
+                sessionEntries.addAll(entries);
+            }
+        }
+
+        return sessionEntries;
+    }
+
 }
