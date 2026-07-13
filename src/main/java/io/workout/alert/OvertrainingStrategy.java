@@ -30,7 +30,7 @@ public class OvertrainingStrategy implements AlertStrategy {
         Set<MuscleGroup> currentMuscleGroups = getAllMuscleGroups(context.workoutSession());
         Set<MuscleGroup> previousDayMuscleGroups = new HashSet<>();
 
-        List<WorkoutSession> workoutSessions = workoutSessionRepository.findBySessionDateTimeBetween(context.workoutSession().getSessionDateTime().minusDays(1), context.workoutSession().getSessionDateTime().minusDays(1));
+        List<WorkoutSession> workoutSessions = workoutSessionRepository.findBySessionDateTimeBetween(context.workoutSession().getSessionDateTime().minusDays(1), context.workoutSession().getSessionDateTime());
         workoutSessions.forEach(workoutSession -> previousDayMuscleGroups.addAll(getAllMuscleGroups(workoutSession)));
 
         Set<MuscleGroup> combinedSet = new HashSet<>(currentMuscleGroups);
