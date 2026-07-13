@@ -1,15 +1,24 @@
 package io.workout.alert;
 
+import io.workout.enums.MuscleGroup;
 import io.workout.interfaces.AlertStrategy;
+import io.workout.model.WorkoutSession;
+import io.workout.repository.ExerciseRepository;
 import io.workout.repository.WorkoutSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Component
 public class OvertrainingStrategy implements AlertStrategy {
 
     @Autowired
     private WorkoutSessionRepository workoutSessionRepository;
+    @Autowired
+    private ExerciseRepository exerciseRepository;
 
     @Override
     public boolean supports(AlertContext context) {
@@ -18,10 +27,27 @@ public class OvertrainingStrategy implements AlertStrategy {
 
     @Override
     public void evaluate(AlertContext context) {
-        //Warns the user that the muscle group may need rest
+        Set<MuscleGroup> currentMuscleGroups = getAllMuscleGroups(context.workoutSession());
+        Set<MuscleGroup> previousDayMuscleGroups = new HashSet<>();
+
+        List<WorkoutSession> workoutSessions = workoutSessionRepository.findBySessionDateTimeBetween(context.workoutSession().getSessionDateTime().minusDays(1), context.workoutSession().getSessionDateTime().minusDays(1));
+        workoutSessions.forEach(workoutSession -> previousDayMuscleGroups.addAll(getAllMuscleGroups(workoutSession)));
+
+        Set<MuscleGroup> combinedSet = new HashSet<>(currentMuscleGroups);
+        combinedSet.addAll(previousDayMuscleGroups);
+
+        if(combinedSet.size() <  (currentMuscleGroups.size() + previousDayMuscleGroups.size())) {
+            System.out.println(ANSI_YELLOW + "[⚠ ALERT]: You have already worked on the same muscle group for consecutive days! You need to take a rest. " + ANSI_RESET );
+        }
     }
+
+    private Set<MuscleGroup> getAllMuscleGroups(WorkoutSession workoutSession) {
+        Set<MuscleGroup> muscleGroups = new HashSet<>();
+        workoutSession.getSessionEntries().forEach(entry -> {
+            exerciseRepository.findById(entry.exerciseId()).ifPresent(exercise -> muscleGroups.add(exercise.getMuscleGroup()));
+        });
+
+        return muscleGroups;
+    }
+
 }
-
-
-//OvertrainingStrategy	supports() — true when context.getWorkoutSession() != null. evaluate() — fires when the same primary muscle group has been trained on consecutive days.
-// Warns the user that the muscle group may need rest. Called from SessionService when a session is completed.
