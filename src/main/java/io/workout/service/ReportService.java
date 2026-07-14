@@ -4,11 +4,14 @@ import io.github.kusoroadeolu.clique.Clique;
 import io.github.kusoroadeolu.clique.components.Table;
 import io.github.kusoroadeolu.clique.configuration.TableType;
 import io.workout.authentication.SessionContext;
+import io.workout.enums.ExerciseType;
 import io.workout.model.Exercise;
+import io.workout.model.ExerciseProgression;
 import io.workout.model.SessionEntry;
 import io.workout.model.WorkoutSession;
 import io.workout.repository.ExerciseRepository;
 import io.workout.repository.WorkoutSessionRepository;
+import io.workout.util.SparklineUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +57,7 @@ public class ReportService {
                     .collect(Collectors.toMap(
                             Map.Entry::getKey,
                             Map.Entry::getValue,
-                            (oldValue, newValue) -> oldValue,
+                            (oldValue, _) -> oldValue,
                             LinkedHashMap::new
                     )).reversed();
 
@@ -69,10 +72,53 @@ public class ReportService {
     }
 
     public void exerciseProgression(Exercise exercise, LocalDateTime startDate, LocalDateTime endDate) {
+        List<ExerciseProgression> exerciseProgressions = new ArrayList<>();
         List<WorkoutSession> workoutSessions = workoutSessionRepository.findBySessionDateTimeBetween(startDate, endDate);
-        List<SessionEntry> sessionEntries = getAllSessionEntriesByExercise(exercise, workoutSessions);
+        for (WorkoutSession workoutSession : workoutSessions) {
+            for(SessionEntry sessionEntry : workoutSession.getSessionEntries()) {
+                if(sessionEntry.exerciseId().equals(exercise.getId())) {
+                    exerciseProgressions.add(new ExerciseProgression(workoutSession.getSessionDateTime(), sessionEntry));
+                }
+            }
+        }
 
-        System.out.println(sessionEntries);
+        System.out.println("| EXERCISE PROGRESSION TABLE |");
+        System.out.println("| EXERCISE: " +  exercise.getExerciseDisplay() + " |");
+        Table sessionEntryTable = Clique.table(TableType.BOX_DRAW)
+                .headers(
+                        "[*blue, bold]DATE[/]",
+                        "[*blue, bold]SETS[/]",
+                        "[*blue, bold]REPS[/]",
+                        "[*blue, bold]WEIGHT (KG)[/]",
+                        "[*blue, bold]DURATION[/]",
+                        "[*blue, bold]DISTANCE (KM)[/]",
+                        "[*blue, bold]ADDED WEIGHT (KG)[/]",
+                        "[*blue, bold]NOTES[/]"
+                );
+        for(ExerciseProgression exerciseProgression : exerciseProgressions) {
+            sessionEntryTable.row(exerciseProgression.sessionDate().toString(), String.valueOf(exerciseProgression.sessionEntry().sets()), String.valueOf(exerciseProgression.sessionEntry().reps()), String.valueOf(exerciseProgression.sessionEntry().weightKg()),
+                    String.valueOf(exerciseProgression.sessionEntry().duration()), String.valueOf(exerciseProgression.sessionEntry().distanceKm()), String.valueOf(exerciseProgression.sessionEntry().addedWeightKg()), exerciseProgression.sessionEntry().notes());
+        }
+        sessionEntryTable.render();
+        System.out.println();
+
+       System.out.println(" | SPARKLINE TABLE |");
+        if(ExerciseType.CARDIO.equals(exercise.getExerciseType())) {
+            List<Integer> values = exerciseProgressions.stream()
+                    .map(exerciseProgression -> (exerciseProgression.sessionEntry().duration() / exerciseProgression.sessionEntry().distanceKm()))
+                    .collect(Collectors.toList());
+            System.out.println(SparklineUtil.renderLabeled("Pace", values, ""));
+        }
+        if(ExerciseType.BODYWEIGHT.equals(exercise.getExerciseType())) {
+            List<Integer> values = exerciseProgressions.stream()
+                    .map(exerciseProgression -> exerciseProgression.sessionEntry().reps()).toList();
+            System.out.println(SparklineUtil.renderLabeled("Reps", values, ""));
+        }
+        if(ExerciseType.STRENGTH.equals(exercise.getExerciseType())) {
+            List<Integer> values = exerciseProgressions.stream()
+                    .map(exerciseProgression -> exerciseProgression.sessionEntry().weightKg()).toList();
+            System.out.println(SparklineUtil.renderLabeled("Weight", values, "Kg"));
+        }
     }
 
     private List<SessionEntry> getAllSessionEntriesByExercise(Exercise exercise, List<WorkoutSession> workoutSessions) {
