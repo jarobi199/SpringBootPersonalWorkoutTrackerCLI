@@ -73,7 +73,7 @@ public class ReportService {
 
     public void exerciseProgression(Exercise exercise, LocalDateTime startDate, LocalDateTime endDate) {
         List<ExerciseProgression> exerciseProgressions = new ArrayList<>();
-        List<WorkoutSession> workoutSessions = workoutSessionRepository.findBySessionDateTimeBetween(startDate, endDate);
+        List<WorkoutSession> workoutSessions = workoutSessionRepository.findByUserIdAndSessionDateTimeBetween(SessionContext.getUser().getId(), startDate, endDate);
         for (WorkoutSession workoutSession : workoutSessions) {
             for(SessionEntry sessionEntry : workoutSession.getSessionEntries()) {
                 if(sessionEntry.exerciseId().equals(exercise.getId())) {
@@ -137,4 +137,7 @@ public class ReportService {
         return sessionEntries;
     }
 
+    public void volumeOverTime() {
+        System.out.println("| TOTAL WEEKLY TRAINING VOLUME |");
+    }
 }

@@ -27,9 +27,14 @@ public class ProgressMenu implements IMenu {
             switch (choice) {
                 case 1 -> topExercises();
                 case 2 -> exerciseProgression();
+                case 3 -> volumeOverTime();
             }
         }
         while (choice != 0);
+    }
+
+    public void volumeOverTime() {
+        reportService.volumeOverTime();
     }
 
     public void exerciseProgression() {

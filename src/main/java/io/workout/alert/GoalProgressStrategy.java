@@ -21,7 +21,7 @@ public class GoalProgressStrategy implements AlertStrategy {
 
     @Override
     public void evaluate(AlertContext context) {
-        int workoutSessionsInWeek = workoutSessionRepository.findBySessionDateTimeBetween(LocalDateTime.now().minusDays(7), LocalDateTime.now()).size();
+        int workoutSessionsInWeek = workoutSessionRepository.findByUserIdAndSessionDateTimeBetween(SessionContext.getUser().getId(), LocalDateTime.now().minusDays(7), LocalDateTime.now()).size();
         int sessionGoal =  SessionContext.getUser().getWeeklySessionGoal();
         if(workoutSessionsInWeek < sessionGoal) {
             System.out.println(ANSI_YELLOW + "[⚠ ALERT]: You are below your weekly workout session goal! You have logged " + workoutSessionsInWeek + " workout sessions but your goal is " + sessionGoal + "." + ANSI_RESET );

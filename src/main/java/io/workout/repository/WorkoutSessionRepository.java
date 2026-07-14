@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface WorkoutSessionRepository extends MongoRepository<WorkoutSession, String> {
     List<WorkoutSession> findByUserIdOrderBySessionDateTimeDesc(String userId);
-    List<WorkoutSession> findBySessionDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<WorkoutSession> findByUserIdAndSessionDateTimeBetween(String userId, LocalDateTime startDate, LocalDateTime endDate);
 }
 

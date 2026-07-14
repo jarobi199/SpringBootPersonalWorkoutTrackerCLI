@@ -1,5 +1,6 @@
 package io.workout.alert;
 
+import io.workout.authentication.SessionContext;
 import io.workout.enums.MuscleGroup;
 import io.workout.interfaces.AlertStrategy;
 import io.workout.model.WorkoutSession;
@@ -30,7 +31,7 @@ public class OvertrainingStrategy implements AlertStrategy {
         Set<MuscleGroup> currentMuscleGroups = getAllMuscleGroups(context.workoutSession());
         Set<MuscleGroup> previousDayMuscleGroups = new HashSet<>();
 
-        List<WorkoutSession> workoutSessions = workoutSessionRepository.findBySessionDateTimeBetween(context.workoutSession().getSessionDateTime().minusDays(1), context.workoutSession().getSessionDateTime());
+        List<WorkoutSession> workoutSessions = workoutSessionRepository.findByUserIdAndSessionDateTimeBetween(SessionContext.getUser().getId(), context.workoutSession().getSessionDateTime().minusDays(1), context.workoutSession().getSessionDateTime());
         workoutSessions.forEach(workoutSession -> previousDayMuscleGroups.addAll(getAllMuscleGroups(workoutSession)));
 
         Set<MuscleGroup> combinedSet = new HashSet<>(currentMuscleGroups);
