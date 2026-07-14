@@ -19,7 +19,7 @@ import java.util.Map;
 public class BarChartUtil {
 
     private final String title;
-    private final Map<String, Double> bars;
+    private final Map<String, Integer> bars;
     private final int maxWidth;
     private final boolean showTotal;
 
@@ -37,14 +37,14 @@ public class BarChartUtil {
     public void render() {
         if (bars.isEmpty()) return;
 
-        double total = bars.values().stream()
-                .mapToDouble(Double::doubleValue)
+        int total = bars.values().stream()
+                .mapToInt(Integer::intValue)
                 .sum();
 
         // When showTotal is true, Total is always the max (full bar).
-        // Otherwise scale to the largest individual bar.
-        double maxValue = showTotal ? total
-                : bars.values().stream().mapToDouble(Double::doubleValue).max().orElse(1.0);
+        // Otherwise, scale to the largest individual bar.
+        int maxValue = showTotal ? total
+                : bars.values().stream().mapToInt(Integer::intValue).max().orElse(1);
 
         if (title != null && !title.isBlank()) {
             System.out.println("\n" + title);
@@ -65,20 +65,20 @@ public class BarChartUtil {
             printBar("Total", total, maxValue, labelWidth);
         }
 
-        for (Map.Entry<String, Double> entry : bars.entrySet()) {
+        for (Map.Entry<String, Integer> entry : bars.entrySet()) {
             printBar(entry.getKey(), entry.getValue(), maxValue, labelWidth);
         }
 
         System.out.println();
     }
 
-    private void printBar(String label, double value, double maxValue, int labelWidth) {
-        int filled = (int) Math.round((value / maxValue) * maxWidth);
+    private void printBar(String label, int value, int maxValue, int labelWidth) {
+        int filled = (int) Math.round((float) value / maxValue * maxWidth);
         int empty = maxWidth - filled;
         String bar = "█".repeat(filled) + "░".repeat(empty);
         String formattedLabel = String.format("%-" + labelWidth + "s", label);
-        String formattedValue = String.format("$%,.2f", value);
-        System.out.println(formattedLabel + "  " + bar + "  " + formattedValue);
+        //String formattedValue = String.format("$%,.2f", value);
+        System.out.println(formattedLabel + "  " + bar + "  " + value);
     }
 
     // ── Builder ──────────────────────────────────────────────────────────────
@@ -86,7 +86,7 @@ public class BarChartUtil {
     public static class Builder {
 
         private String title = null;
-        private final Map<String, Double> bars = new LinkedHashMap<>();
+        private final Map<String, Integer> bars = new LinkedHashMap<>();
         private int maxWidth = 40;
         private boolean showTotal = false;
 
@@ -95,7 +95,7 @@ public class BarChartUtil {
             return this;
         }
 
-        public Builder bar(String label, double value) {
+        public Builder bar(String label, int value) {
             bars.put(label, value);
             return this;
         }

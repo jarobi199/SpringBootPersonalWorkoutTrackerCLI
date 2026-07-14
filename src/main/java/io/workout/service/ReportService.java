@@ -11,6 +11,7 @@ import io.workout.model.SessionEntry;
 import io.workout.model.WorkoutSession;
 import io.workout.repository.ExerciseRepository;
 import io.workout.repository.WorkoutSessionRepository;
+import io.workout.util.BarChartUtil;
 import io.workout.util.SparklineUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -137,7 +138,37 @@ public class ReportService {
         return sessionEntries;
     }
 
+    private int getTotalVolume(List<WorkoutSession> workoutSessions) {
+        int totalVolume = 0;
+
+        for(WorkoutSession workoutSession : workoutSessions) {
+            for(SessionEntry sessionEntry : workoutSession.getSessionEntries()) {
+                Exercise exercise = exerciseRepository.findById(sessionEntry.exerciseId()).orElse(null);
+                if(exercise != null) {
+                    totalVolume = totalVolume + exercise.calculateVolume(sessionEntry);
+                }
+            }
+        }
+
+        return totalVolume;
+    }
+
     public void volumeOverTime() {
-        System.out.println("| TOTAL WEEKLY TRAINING VOLUME |");
+        int weeklyTotalVolume = 0;
+        List<WorkoutSession> workoutSessions = null;
+        BarChartUtil.Builder chartBuilder = BarChartUtil.builder().title("TOTAL WEEKLY TRAINING VOLUME");
+        LocalDateTime startDateTime = LocalDateTime.now().minusDays(7);
+        LocalDateTime endDateTime = LocalDateTime.now();
+
+        for(int i =1; i <= 8; i++) {
+            workoutSessions = workoutSessionRepository.findByUserIdAndSessionDateTimeBetween(SessionContext.getUser().getId(), startDateTime, endDateTime);
+            weeklyTotalVolume = getTotalVolume(workoutSessions);
+            chartBuilder.bar("Week " + i, weeklyTotalVolume);
+
+            endDateTime = startDateTime;
+            startDateTime = startDateTime.minusDays(7);
+        }
+
+        chartBuilder.render();
     }
 }
