@@ -249,11 +249,44 @@ public class ReportService {
     }
 
     public void monthlySummary() {
-        System.out.println("| MONTHLY SUMMARY |");
         System.out.println("Please enter a month as an integer (ex. January is 1, etc.):");
         int month = InputHandler.getIntegerInput();
         int year = Year.now().getValue();
         List<WorkoutSession> workoutSessions = workoutSessionRepository.findByUserIdAndSessionDateTimeBetween(SessionContext.getUser().getId(), LocalDateTime.of(year,month, 1,0, 0), LocalDateTime.of(year,month, 31,23, 59));
+        int totalVolume = getTotalVolume(workoutSessions);
+        int totalNumberOfSessions = workoutSessions.size();
 
+        System.out.println("| MONTHLY SUMMARY |");
+        Table monthlySummaryTable = Clique.table(TableType.BOX_DRAW)
+                .headers(
+                        "[*blue, bold]TOTAL SESSIONS[/]",
+                        "[*blue, bold]TOTAL VOLUME[/]",
+                        "[*blue, bold]AVERAGE SESSION VOLUME[/]"
+                )
+                .row(String.valueOf(totalNumberOfSessions), String.valueOf(totalVolume), String.valueOf(totalVolume / totalNumberOfSessions));
+        monthlySummaryTable.render();
+
+        System.out.println("| VOLUME BY EXERCISE TYPE |");
+        Table volumeByExerciseTable = Clique.table(TableType.BOX_DRAW)
+                .headers(
+                        "[*blue, bold]EXERCISE[/]",
+                        "[*blue, bold]VOLUME[/]"
+                );
+
+        Map<Exercise, Integer> exerciseVolumeMap = new HashMap<>();
+        List<Exercise> exercises = exerciseRepository.findByUserId(SessionContext.getUser().getId());
+        for (Exercise exercise : exercises) {
+            List<SessionEntry> sessionEntries = getAllSessionEntriesByExercise(exercise, workoutSessions);
+            if(!sessionEntries.isEmpty()) {
+                exerciseVolumeMap.put(exercise, sessionEntries.stream()
+                        .mapToInt(exercise::calculateVolume).sum());
+            }
+        }
+
+        for(Map.Entry<Exercise, Integer> entry : exerciseVolumeMap.entrySet()) {
+            volumeByExerciseTable.row(entry.getKey().getExerciseDisplay(), String.valueOf(entry.getValue()));
+        }
+        volumeByExerciseTable.render();
     }
+
 }
