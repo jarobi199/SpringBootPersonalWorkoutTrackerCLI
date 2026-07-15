@@ -20,6 +20,7 @@ public class ReportsMenu implements IMenu {
             choice = InputHandler.getIntegerInput();
             switch (choice) {
                 case 1 -> reportService.weeklySummary();
+                case 2 -> reportService.monthlySummary();
             }
         }
         while (choice != 0);

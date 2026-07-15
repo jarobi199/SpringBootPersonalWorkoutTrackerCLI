@@ -15,11 +15,13 @@ import io.workout.model.WorkoutSession;
 import io.workout.repository.ExerciseRepository;
 import io.workout.repository.WorkoutSessionRepository;
 import io.workout.util.BarChartUtil;
+import io.workout.util.InputHandler;
 import io.workout.util.SparklineUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -209,7 +211,7 @@ public class ReportService {
             }
         }
 
-        Map<MuscleGroup, Integer> sortedMuscleGroupMap = muscleGroupMap.entrySet().
+        MuscleGroup topMuscleGroup = muscleGroupMap.entrySet().
                 stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .collect(Collectors.toMap(
@@ -217,7 +219,7 @@ public class ReportService {
                         Map.Entry::getValue,
                         (oldValue, _) -> oldValue,
                         LinkedHashMap::new
-                ));
+                )).firstEntry().getKey();
 
         int totalVolume = workoutSessionMap.values().stream().mapToInt(Integer::intValue).sum();
         WorkoutSession longestWorkoutSession = workoutSessionMap.entrySet()
@@ -230,8 +232,28 @@ public class ReportService {
                         LinkedHashMap::new
                 )).firstEntry().getKey();
 
-        alertManager.evaluate(new AlertContext(new WorkoutSession(), null));
 
+        System.out.println("| WEEKLY SUMMARY |");
+        Table weeklySummaryTable = Clique.table(TableType.BOX_DRAW)
+                .headers(
+                        "[*blue, bold]SESSIONS COMPLETED[/]",
+                        "[*blue, bold]WEEKLY GOAL[/]",
+                        "[*blue, bold]TOTAL VOLUME[/]",
+                        "[*blue, bold]TOP MUSCLE GROUP[/]",
+                        "[*blue, bold]LONGEST SESSION[/]"
+                )
+                .row(String.valueOf(numberOfSessions), String.valueOf(goal), String.valueOf(totalVolume), topMuscleGroup.name(), longestWorkoutSession.getDisplayName());
+        weeklySummaryTable.render();
+
+        alertManager.evaluate(new AlertContext(workoutSessions.getLast(), null));
     }
 
+    public void monthlySummary() {
+        System.out.println("| MONTHLY SUMMARY |");
+        System.out.println("Please enter a month as an integer (ex. January is 1, etc.):");
+        int month = InputHandler.getIntegerInput();
+        int year = Year.now().getValue();
+        List<WorkoutSession> workoutSessions = workoutSessionRepository.findByUserIdAndSessionDateTimeBetween(SessionContext.getUser().getId(), LocalDateTime.of(year,month, 1,0, 0), LocalDateTime.of(year,month, 31,23, 59));
+
+    }
 }

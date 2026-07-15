@@ -19,6 +19,8 @@ public class MainMenu implements IMenu {
     @Autowired
     private ProgressMenu progressMenu;
     @Autowired
+    private ReportsMenu reportsMenu;
+    @Autowired
     private GoodbyeMenu goodbyeMenu;
 
     public void show() {
@@ -37,6 +39,7 @@ public class MainMenu implements IMenu {
                 case 1 -> exerciseMenu;
                 case 2 -> sessionMenu;
                 case 3 -> progressMenu;
+                case 4 -> reportsMenu;
                 case 5 -> settingsMenu;
                 case 0 -> goodbyeMenu;
                default -> throw new IllegalStateException("Unexpected value: " + choice);
