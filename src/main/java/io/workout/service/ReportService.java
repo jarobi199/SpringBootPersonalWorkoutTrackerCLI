@@ -5,6 +5,7 @@ import io.github.kusoroadeolu.clique.components.Table;
 import io.github.kusoroadeolu.clique.configuration.TableType;
 import io.workout.authentication.SessionContext;
 import io.workout.enums.ExerciseType;
+import io.workout.enums.MuscleGroup;
 import io.workout.model.Exercise;
 import io.workout.model.ExerciseProgression;
 import io.workout.model.SessionEntry;
@@ -171,4 +172,60 @@ public class ReportService {
 
         chartBuilder.render();
     }
+
+    public void weeklySummary() {
+        Map<WorkoutSession, Integer> workoutSessionMap = new HashMap<>();
+        Map<MuscleGroup, Integer> muscleGroupMap = new EnumMap<>(MuscleGroup.class);
+        List<WorkoutSession> workoutSessions = workoutSessionRepository.findByUserIdAndSessionDateTimeBetween(SessionContext.getUser().getId(), LocalDateTime.now().minusDays(7), LocalDateTime.now());
+        int numberOfSessions = workoutSessions.size();
+        int goal = SessionContext.getUser().getWeeklySessionGoal();
+
+        for(WorkoutSession workoutSession : workoutSessions) {
+            for(SessionEntry sessionEntry : workoutSession.getSessionEntries()) {
+                Exercise exercise = exerciseRepository.findById(sessionEntry.exerciseId()).orElse(null);
+
+                if(exercise != null) {
+                    //Populate workoutSessionMap to determine highest total volume single workout
+                    if(workoutSessionMap.containsKey(workoutSession)) {
+                        workoutSessionMap.put(workoutSession, workoutSessionMap.get(workoutSession) + exercise.calculateVolume(sessionEntry));
+                    }
+                    else
+                    {
+                        workoutSessionMap.put(workoutSession, exercise.calculateVolume(sessionEntry));
+                    }
+                    //Populate muscle group map to determine most trained muscle group
+                    if(muscleGroupMap.containsKey(exercise.getMuscleGroup())) {
+                        muscleGroupMap.replace(exercise.getMuscleGroup(), muscleGroupMap.get(exercise.getMuscleGroup()) + 1);
+                    }
+                    else
+                    {
+                        muscleGroupMap.put(exercise.getMuscleGroup(), 1);
+                    }
+                }
+            }
+        }
+
+        Map<MuscleGroup, Integer> sortedMuscleGroupMap = muscleGroupMap.entrySet().
+                stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, _) -> oldValue,
+                        LinkedHashMap::new
+                ));
+
+        int totalVolume = workoutSessionMap.values().stream().mapToInt(Integer::intValue).sum();
+        WorkoutSession longestWorkoutSession = workoutSessionMap.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, _) -> oldValue,
+                        LinkedHashMap::new
+                )).firstEntry().getKey();
+
+    }
+
 }
