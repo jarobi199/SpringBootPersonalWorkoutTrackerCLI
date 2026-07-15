@@ -3,6 +3,8 @@ package io.workout.service;
 import io.github.kusoroadeolu.clique.Clique;
 import io.github.kusoroadeolu.clique.components.Table;
 import io.github.kusoroadeolu.clique.configuration.TableType;
+import io.workout.alert.AlertContext;
+import io.workout.alert.AlertManager;
 import io.workout.authentication.SessionContext;
 import io.workout.enums.ExerciseType;
 import io.workout.enums.MuscleGroup;
@@ -28,6 +30,8 @@ public class ReportService {
     private ExerciseRepository exerciseRepository;
     @Autowired
     private WorkoutSessionRepository  workoutSessionRepository;
+    @Autowired
+    private AlertManager alertManager;
 
     public void topExercises() {
         Map<Exercise, List<SessionEntry>> exerciseListMap = new HashMap<>();
@@ -225,6 +229,8 @@ public class ReportService {
                         (oldValue, _) -> oldValue,
                         LinkedHashMap::new
                 )).firstEntry().getKey();
+
+        alertManager.evaluate(new AlertContext(new WorkoutSession(), null));
 
     }
 
