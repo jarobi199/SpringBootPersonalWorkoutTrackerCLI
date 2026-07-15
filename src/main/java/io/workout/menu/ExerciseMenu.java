@@ -62,7 +62,7 @@ public class ExerciseMenu implements IMenu {
         String exerciseName = InputHandler.getStringInput();
         System.out.println("Enter exercise muscle group (CHEST, BACK, SHOULDERS, BICEPS, TRICEPS, LEGS, CORE, FULL_BODY , CARDIO):");
         MuscleGroup muscleGroup = MuscleGroup.valueOf(InputHandler.getStringInput().toUpperCase());
-        System.out.println("Enter exercise equipment (BARBELL, DUMBBELL, CABLE, MACHINE, BODYWEIGHT, TREADMILL, BIKE, ROWER, OTHER):");
+        System.out.println("Enter exercise equipment (BARBELL, DUMBBELL, CABLE, MACHINE, BODY, TREADMILL, BIKE, ROWER, OTHER):");
         Equipment equipment = Equipment.valueOf(InputHandler.getStringInput().toUpperCase());
         System.out.println("Enter exercise notes:");
         String notes = InputHandler.getStringInput();

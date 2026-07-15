@@ -59,7 +59,7 @@ public class MainMenu implements IMenu {
     }
 
     public void displayTitle() {
-        System.out.println("===========================================================");
+        System.out.println( "===========================================================");
         System.out.println("    Welcome to the Personal Workout Tracker Application!");
         System.out.println("============================================================");
     }

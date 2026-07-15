@@ -1,0 +1,349 @@
+# ============================================================
+# Personal Workout Tracker — test_input.txt
+# User: kseale (ADMINISTRATOR, bodyWeight=75kg)
+# Reports menu (option 4) is not yet implemented — skipped.
+# ============================================================
+
+# ============================================================
+# LOGIN
+# ============================================================
+# STEP 1: Login with valid credentials
+kseale
+password
+
+# ============================================================
+# BLOCK 1: EXERCISE MENU — Add exercises, list, view, attempt delete
+# ============================================================
+# Main menu → Exercises
+1
+
+# STEP 2: Add Strength exercise — Bench Press
+2
+STRENGTH
+Bench Press
+CHEST
+BARBELL
+Flat bench barbell press
+
+# STEP 3: Add Strength exercise — Squat
+2
+STRENGTH
+Squat
+LEGS
+BARBELL
+Back squat
+
+# STEP 4: Add Cardio exercise — Treadmill Run
+2
+CARDIO
+Treadmill Run
+CARDIO
+TREADMILL
+Steady state cardio
+
+# STEP 5: Add Cardio exercise — Rowing Machine
+2
+CARDIO
+Rowing Machine
+FULL_BODY
+ROWER
+Rowing intervals
+
+# STEP 6: Add Bodyweight exercise — Pull-Up
+2
+BODYWEIGHT
+Pull-Up
+BACK
+BODY
+Standard pull-ups no added weight
+
+# STEP 7: Add Bodyweight exercise — Push-Up
+2
+BODYWEIGHT
+Push-Up
+CHEST
+BODY
+Standard push-ups no added weight
+
+# STEP 8: List all exercises
+1
+
+# STEP 9: View exercise detail — Bench Press (1)
+3
+1
+
+# STEP 10: Back to main menu
+0
+
+# ============================================================
+# BLOCK 2: SESSIONS MENU — Create 3 sessions
+# ============================================================
+# Main menu → Sessions
+2
+
+# STEP 11: Start new session — Session 1 (Strength + Bodyweight)
+1
+# Select Bench Press (1)
+1
+4
+8
+80
+Felt strong today
+12
+Y
+# Select Squat (2)
+2
+4
+6
+100
+Good depth on all reps
+15
+Y
+# Select Pull-Up (5)
+5
+3
+10
+0
+Strict form
+10
+N
+# Overall session duration and notes
+45
+Upper and lower strength plus pull-ups
+
+# STEP 12: Start new session — Session 2 (Cardio)
+1
+# Select Treadmill Run (3)
+3
+5
+5k easy run
+28
+Y
+# Select Rowing Machine (4)
+4
+3
+Moderate intensity intervals
+18
+N
+# Overall session duration and notes
+50
+Cardio day
+
+# STEP 13: Start new session — Session 3 (Mixed)
+1
+# Select Bench Press (1)
+1
+5
+5
+90
+Heavy day pushing weight up
+15
+Y
+# Select Push-Up (6)
+6
+3
+20
+0
+Burnout set after bench
+8
+Y
+# Select Treadmill Run (3)
+3
+3
+Short cool down run
+18
+N
+# Overall session duration and notes
+55
+Push day with cardio finisher
+
+# STEP 14: View all sessions
+2
+
+# STEP 15: View session detail — Session 1
+3
+1
+
+# STEP 16: Delete session 3 — confirm Y
+4
+3
+Y
+
+# STEP 17: Start new session — Session 4 (Strength progression — heavier Bench + Squat)
+1
+# Select Bench Press (1)
+1
+4
+8
+85
+Slight weight increase on bench
+13
+Y
+# Select Squat (2)
+2
+4
+6
+105
+Hitting depth consistently
+16
+Y
+# Select Pull-Up (5)
+5
+3
+12
+0
+Two extra reps on pull-ups
+11
+N
+# Overall session duration and notes
+50
+Progressive overload session
+
+# STEP 18: Start new session — Session 5 (Cardio + Bodyweight)
+1
+# Select Treadmill Run (3)
+3
+6
+Pushed to 6k today
+32
+Y
+# Select Push-Up (6)
+6
+4
+25
+0
+Increased sets and reps
+10
+Y
+# Select Pull-Up (5)
+5
+3
+11
+0
+One extra rep per set
+11
+N
+# Overall session duration and notes
+58
+Cardio and bodyweight focus
+
+# STEP 19: Start new session — Session 6 (Full mixed — all types)
+1
+# Select Bench Press (1)
+1
+5
+5
+92
+Pushing close to max
+16
+Y
+# Select Treadmill Run (3)
+3
+4
+Short run after bench
+22
+Y
+# Select Squat (2)
+2
+3
+8
+95
+Volume day on squats
+14
+N
+# Overall session duration and notes
+60
+Full body mixed session
+
+# STEP 20: View all sessions (confirm new sessions)
+2
+
+# STEP 21: View session detail — Session 1
+3
+1
+
+# STEP 22: Back to main menu
+0
+
+# ============================================================
+# BLOCK 3: PROGRESS MENU
+# ============================================================
+# Main menu → Progress
+3
+
+# STEP 23: Top exercises
+1
+
+# STEP 24: Exercise progression — Bench Press (1), wide date range
+2
+1
+2025-01-01
+2026-12-31
+
+# STEP 25: Volume over time
+3
+
+# STEP 26: Back to main menu
+0
+
+# ============================================================
+# BLOCK 4: SETTINGS MENU
+# ============================================================
+# Main menu → Settings
+5
+
+# STEP 27: Update body weight
+1
+80
+
+# STEP 28: Set weekly session goal
+2
+4
+
+# STEP 29: Change password
+3
+newpassword123
+
+# STEP 30: Add user (admin only) — Jordan Rivers
+4
+Jordan Rivers
+jrivers
+password
+USER
+70
+
+# STEP 31: Delete user (admin only) — delete jrivers, confirm Y
+5
+jrivers
+Y
+
+# STEP 32: Back to main menu
+0
+
+# ============================================================
+# BLOCK 5: EXERCISE MENU — Delete exercise (blocked then success)
+# ============================================================
+# Main menu → Exercises
+1
+
+# STEP 33: Attempt to delete Bench Press (1) — should fail (referenced by sessions)
+4
+1
+
+# STEP 34: List exercises to confirm order
+1
+
+# STEP 35: Delete Rowing Machine (4) — should succeed (all sessions referencing it were deleted)
+4
+4
+
+# STEP 36: List exercises (confirm deletion)
+1
+
+# STEP 37: Back to main menu
+0
+
+# ============================================================
+# STEP 38: Exit application
+# ============================================================
+0
