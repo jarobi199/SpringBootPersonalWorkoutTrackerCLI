@@ -21,7 +21,7 @@ public class ReportsMenu implements IMenu {
             switch (choice) {
                 case 1 -> reportService.weeklySummary();
                 case 2 -> reportService.monthlySummary();
-                case 4 -> reportService.muscleGroupFrequency();
+                case 3 -> reportService.muscleGroupFrequency();
             }
         }
         while (choice != 0);
