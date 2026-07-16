@@ -289,4 +289,7 @@ public class ReportService {
         volumeByExerciseTable.render();
     }
 
+    public void muscleGroupFrequency() {
+
+    }
 }
