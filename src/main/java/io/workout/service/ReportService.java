@@ -266,6 +266,7 @@ public class ReportService {
                 .row(String.valueOf(totalNumberOfSessions), String.valueOf(totalVolume), String.valueOf(totalVolume / totalNumberOfSessions));
         monthlySummaryTable.render();
 
+        System.out.println();
         System.out.println("| VOLUME BY EXERCISE TYPE |");
         Table volumeByExerciseTable = Clique.table(TableType.BOX_DRAW)
                 .headers(
@@ -287,6 +288,7 @@ public class ReportService {
             volumeByExerciseTable.row(entry.getKey().getExerciseDisplay(), String.valueOf(entry.getValue()));
         }
         volumeByExerciseTable.render();
+
     }
 
     public void muscleGroupFrequency() {

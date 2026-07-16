@@ -41,7 +41,7 @@ public class AuthenticateMenu implements IMenu {
     }
 
     public void automaticLogin() {
-        authenticationService.authenticate("kseale", "password");
+        authenticationService.authenticate("kseale", "newpassword123");
     }
 
 }
