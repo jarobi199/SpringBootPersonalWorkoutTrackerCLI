@@ -1,7 +1,6 @@
 # ============================================================
 # Personal Workout Tracker — test_input.txt
 # User: kseale (ADMINISTRATOR, bodyWeight=75kg)
-# Reports menu (option 4) is not yet implemented — skipped.
 # ============================================================
 
 # ============================================================
@@ -76,7 +75,7 @@ Standard push-ups no added weight
 0
 
 # ============================================================
-# BLOCK 2: SESSIONS MENU — Create 3 sessions
+# BLOCK 2: SESSIONS MENU — Create 3 sessions, delete 1, add 3 more
 # ============================================================
 # Main menu → Sessions
 2
@@ -107,7 +106,6 @@ Y
 Strict form
 10
 N
-# Overall session duration and notes
 45
 Upper and lower strength plus pull-ups
 
@@ -125,7 +123,6 @@ Y
 Moderate intensity intervals
 18
 N
-# Overall session duration and notes
 50
 Cardio day
 
@@ -153,7 +150,6 @@ Y
 Short cool down run
 18
 N
-# Overall session duration and notes
 55
 Push day with cardio finisher
 
@@ -169,7 +165,7 @@ Push day with cardio finisher
 3
 Y
 
-# STEP 17: Start new session — Session 4 (Strength progression — heavier Bench + Squat)
+# STEP 17: Start new session — Session 4 (Strength progression)
 1
 # Select Bench Press (1)
 1
@@ -195,7 +191,6 @@ Y
 Two extra reps on pull-ups
 11
 N
-# Overall session duration and notes
 50
 Progressive overload session
 
@@ -223,11 +218,10 @@ Y
 One extra rep per set
 11
 N
-# Overall session duration and notes
 58
 Cardio and bodyweight focus
 
-# STEP 19: Start new session — Session 6 (Full mixed — all types)
+# STEP 19: Start new session — Session 6 (Full mixed)
 1
 # Select Bench Press (1)
 1
@@ -251,7 +245,6 @@ Y
 Volume day on squats
 14
 N
-# Overall session duration and notes
 60
 Full body mixed session
 
@@ -287,24 +280,45 @@ Full body mixed session
 0
 
 # ============================================================
-# BLOCK 4: SETTINGS MENU
+# BLOCK 4: REPORTS MENU
+# ============================================================
+# Main menu → Reports
+4
+
+# STEP 27: Weekly summary (no input required — fires GoalProgressStrategy alert if behind goal)
+1
+
+# STEP 28: Monthly summary — current month (July = 7)
+2
+7
+
+# STEP 29: Muscle group frequency — wide date range
+3
+2025-01-01
+2026-12-31
+
+# STEP 30: Back to main menu
+0
+
+# ============================================================
+# BLOCK 5: SETTINGS MENU
 # ============================================================
 # Main menu → Settings
 5
 
-# STEP 27: Update body weight
+# STEP 31: Update body weight
 1
 80
 
-# STEP 28: Set weekly session goal
+# STEP 32: Set weekly session goal
 2
 4
 
-# STEP 29: Change password
+# STEP 33: Change password
 3
 newpassword123
 
-# STEP 30: Add user (admin only) — Jordan Rivers
+# STEP 34: Add user (admin only) — Jordan Rivers
 4
 Jordan Rivers
 jrivers
@@ -312,38 +326,38 @@ password
 USER
 70
 
-# STEP 31: Delete user (admin only) — delete jrivers, confirm Y
+# STEP 35: Delete user (admin only) — delete jrivers, confirm Y
 5
 jrivers
 Y
 
-# STEP 32: Back to main menu
+# STEP 36: Back to main menu
 0
 
 # ============================================================
-# BLOCK 5: EXERCISE MENU — Delete exercise (blocked then success)
+# BLOCK 6: EXERCISE MENU — Delete exercise (blocked then success)
 # ============================================================
 # Main menu → Exercises
 1
 
-# STEP 33: Attempt to delete Bench Press (1) — should fail (referenced by sessions)
+# STEP 37: Attempt to delete Bench Press (1) — should fail (referenced by sessions)
 4
 1
 
-# STEP 34: List exercises to confirm order
+# STEP 38: List exercises to confirm order
 1
 
-# STEP 35: Delete Rowing Machine (4) — should succeed (all sessions referencing it were deleted)
+# STEP 39: Delete Rowing Machine (4) — should succeed (session 2 deleted in block 2)
 4
 4
 
-# STEP 36: List exercises (confirm deletion)
+# STEP 40: List exercises (confirm deletion)
 1
 
-# STEP 37: Back to main menu
+# STEP 41: Back to main menu
 0
 
 # ============================================================
-# STEP 38: Exit application
+# STEP 42: Exit application
 # ============================================================
 0

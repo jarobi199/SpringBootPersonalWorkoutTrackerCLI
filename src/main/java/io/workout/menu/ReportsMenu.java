@@ -32,7 +32,7 @@ public class ReportsMenu implements IMenu {
         System.out.println();
         System.out.println("[1] Weekly summary");
         System.out.println("[2] Monthly summary");
-        System.out.println("[3] Volume over time");
+        System.out.println("[3] Muscle group frequency");
         System.out.println("[0] Back");
         System.out.println("Please make a selection:");
     }
